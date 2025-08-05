@@ -20,7 +20,7 @@ elif [ "$role" = "queue" ]; then
     RETRY_DELAY=15
     RETRIES=0
 
-    until php-fpm-healthcheck > /dev/null 2>&1; do
+    until php-fpm-healthcheck -f /status -p 9000 -H php-fpm > /dev/null 2>&1; do
         RETRIES=$((RETRIES + 1))
 
         echo "🔄 Attempt $RETRIES: PHP-FPM not ready. Retrying in $RETRY_DELAY seconds..."

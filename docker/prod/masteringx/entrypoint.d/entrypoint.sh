@@ -13,26 +13,34 @@ if [ "$role" = "app" ]; then
     echo "Starting PHP-FPM..."
     exec php-fpm
 
+
 elif [ "$role" = "queue" ]; then
-
-    echo "⏳ Waiting for PHP-FPM to be healthy..."
-
-    RETRY_DELAY=15
-    RETRIES=0
-
-    until php-fpm-healthcheck -f /status -p 9000 -H php-fpm > /dev/null 2>&1; do
-        RETRIES=$((RETRIES + 1))
-
-        echo "🔄 Attempt $RETRIES: PHP-FPM not ready. Retrying in $RETRY_DELAY seconds..."
-        sleep "$RETRY_DELAY"
-    done
-
-    echo "✅ PHP-FPM is healthy!"
-
     /usr/local/bin/test-db.sh
 
-    echo "🚀 Starting Laravel queue worker..."
+    echo "Running the queue worker..."
     exec php /var/www/html/artisan queue:work --verbose --tries=3 --timeout=3600
+
+
+#elif [ "$role" = "queue" ]; then
+
+#    echo "⏳ Waiting for PHP-FPM to be healthy..."
+
+#    RETRY_DELAY=15
+#    RETRIES=0
+
+#    until php-fpm-healthcheck -f /status -p 9000 -H php-fpm > /dev/null 2>&1; do
+#        RETRIES=$((RETRIES + 1))
+
+#        echo "🔄 Attempt $RETRIES: PHP-FPM not ready. Retrying in $RETRY_DELAY seconds..."
+#        sleep "$RETRY_DELAY"
+#    done
+
+#    echo "✅ PHP-FPM is healthy!"
+#
+#    /usr/local/bin/test-db.sh
+#
+#    echo "🚀 Starting Laravel queue worker..."
+#    exec php /var/www/html/artisan queue:work --verbose --tries=3 --timeout=3600
 
 #elif [ "$role" = "scheduler" ]; then
 #    echo "Running Laravel scheduler..."

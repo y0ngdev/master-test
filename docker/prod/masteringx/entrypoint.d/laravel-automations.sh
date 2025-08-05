@@ -10,28 +10,17 @@ if [ -f "$APP_BASE_DIR/artisan" ]; then
     echo "Checking for Laravel automations..."
 
     ############################################################################
-    # artisan key:generate
+    # SECURITY CHECK: Require APP_KEY to be explicitly set
     ############################################################################
-    # Check if APP_KEY is set in the environment
     if [ -z "$APP_KEY" ]; then
-        echo "🔑 APP_KEY not set. Generating key..."
-
-        # Generate APP_KEY and capture it
-        GENERATED_KEY=$(php "$APP_BASE_DIR/artisan" key:generate --show)
-
-        if [ -n "$GENERATED_KEY" ]; then
-            green "✅ Generated APP_KEY: $GENERATED_KEY"
-
-            # Export the key to the environment (or write to .env if desired)
-            export APP_KEY="$GENERATED_KEY"
-
-        else
-            echo "❌ Failed to generate APP_KEY"
-            exit 1
-        fi
-    else
-        echo "✅ APP_KEY is already set in environment."
+        echo "❌ APP_KEY is not set in the environment."
+        echo "🛑 Aborting Laravel automations for security reasons."
+        echo "💡 Tip: You can generate a key manually using: php artisan key:generate --show"
+        exit 1
     fi
+
+    green "✅ APP_KEY is set. Proceeding with Laravel automations..."
+
 
     ############################################################################
     # artisan migrate

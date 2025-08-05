@@ -3,6 +3,8 @@
 script_name="laravel-automations"
 APP_BASE_DIR=/var/www/html
 
+green()  { echo -e "\033[1;32m$1\033[0m"; }
+
 # Check to see if an Artisan file exists and assume it means Laravel is configured
 if [ -f "$APP_BASE_DIR/artisan" ]; then
     echo "Checking for Laravel automations..."
@@ -18,11 +20,10 @@ if [ -f "$APP_BASE_DIR/artisan" ]; then
         GENERATED_KEY=$(php "$APP_BASE_DIR/artisan" key:generate --show)
 
         if [ -n "$GENERATED_KEY" ]; then
-            echo "✅ Generated APP_KEY: $GENERATED_KEY"
+            green "✅ Generated APP_KEY: $GENERATED_KEY"
 
             # Export the key to the environment (or write to .env if desired)
             export APP_KEY="$GENERATED_KEY"
-            echo "APP_KEY=$APP_KEY" >> "$APP_BASE_DIR/.env"
 
         else
             echo "❌ Failed to generate APP_KEY"

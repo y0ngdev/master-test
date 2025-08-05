@@ -1,68 +1,113 @@
 #!/bin/sh
-script_name="laravel-automations"
 
+script_name="laravel-automations"
 APP_BASE_DIR=/var/www/html
 
+# Check to see if an Artisan file exists and assume it means Laravel is configured
+if [ -f "$APP_BASE_DIR/artisan" ]; then
+    echo "Checking for Laravel automations..."
 
+    ############################################################################
+    # artisan key:generate
+    ############################################################################
+    # Check if APP_KEY is set in the environment
+    if [ -z "$APP_KEY" ]; then
+        echo "🔑 APP_KEY not set. Generating key..."
 
+        # Generate APP_KEY and capture it
+        GENERATED_KEY=$(php "$APP_BASE_DIR/artisan" key:generate --show)
 
-        # Check to see if an Artisan file exists and assume it means Laravel is configured.
-        if [ -f "$APP_BASE_DIR/artisan" ]; then
-        echo "Checking for Laravel automations..."
-        ############################################################################
-        # artisan migrate
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_MIGRATION:=true}" = "true" ]; then
+        if [ -n "$GENERATED_KEY" ]; then
+            echo "✅ Generated APP_KEY: $GENERATED_KEY"
 
-            echo  "⚡ Running DB readiness check..."
+            # Export the key to the environment (or write to .env if desired)
+            export APP_KEY="$GENERATED_KEY"
+            echo "APP_KEY=$APP_KEY" >> "$APP_BASE_DIR/.env"
 
-            echo ""
+        else
+            echo "❌ Failed to generate APP_KEY"
+            exit 1
+        fi
+    else
+        echo "✅ APP_KEY is already set in environment."
+    fi
 
-            if ! /usr/local/bin/test-db.sh; then
-                echo "❌ Database connection failed..."
-                exit 1
-            fi
+    ############################################################################
+    # artisan migrate
+    ############################################################################
+    if [ "${AUTORUN_LARAVEL_MIGRATION:=true}" = "true" ]; then
+        echo "⚡ Running DB readiness check..."
 
-            echo "🚀 Running migrations..."
-            if [ "${AUTORUN_LARAVEL_MIGRATION_ISOLATION:=false}" = "true" ]; then
-                php "$APP_BASE_DIR/artisan" migrate --force --isolated
-            else
-                php "$APP_BASE_DIR/artisan" migrate --force
-            fi
+        # Run DB connection check script
+        echo ""
+        if ! /usr/local/bin/test-db.sh; then
+            echo "❌ Database connection failed..."
+            exit 1
         fi
 
-        ############################################################################
-        # artisan storage:link
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_STORAGE_LINK:=true}" = "true" ]; then
-            if [ -d "$APP_BASE_DIR/public/storage" ]; then
-                echo "✅ Storage already linked..."
-            else
-                echo "🔐 Linking the storage..."
-                php "$APP_BASE_DIR/artisan" storage:link
-            fi
+        echo "🚀 Running migrations..."
+        if [ "${AUTORUN_LARAVEL_MIGRATION_ISOLATION:=false}" = "true" ]; then
+            php "$APP_BASE_DIR/artisan" migrate --force --isolated
+        else
+            php "$APP_BASE_DIR/artisan" migrate --force
         fi
+    fi
 
-        ############################################################################
-        # artisan db:seed --force
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_VIEW_CACHE:=true}" = "true" ]; then
-            echo "🚀 Clearing Laravel cache before seeding..."
-             php "$APP_BASE_DIR/artisan" cache:clear
-
-            echo "🚀 seeding database..."
-            php "$APP_BASE_DIR/artisan"  db:seed --force
+    ############################################################################
+    # artisan storage:link
+    ############################################################################
+    if [ "${AUTORUN_LARAVEL_STORAGE_LINK:=true}" = "true" ]; then
+        if [ -d "$APP_BASE_DIR/public/storage" ]; then
+            echo "✅ Storage already linked..."
+        else
+            echo "🔐 Linking the storage..."
+            php "$APP_BASE_DIR/artisan" storage:link
         fi
+    fi
 
-        ############################################################################
-        # artisan config:cache
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_CONFIG_CACHE:=true}" = "true" ]; then
-            echo "🚀 Caching Laravel config..."
-            php "$APP_BASE_DIR/artisan" config:cache
-        fi
+    ############################################################################
+    # artisan db:seed --force
+    ############################################################################
+    if [ "${AUTORUN_LARAVEL_VIEW_CACHE:=true}" = "true" ]; then
+        echo "🚀 Clearing Laravel cache before seeding..."
+        php "$APP_BASE_DIR/artisan" cache:clear
 
-        ############################################################################
+        echo "🚀 Seeding database..."
+        php "$APP_BASE_DIR/artisan" db:seed --force
+    fi
+
+    ############################################################################
+    # artisan config:cache
+    ############################################################################
+    if [ "${AUTORUN_LARAVEL_CONFIG_CACHE:=true}" = "true" ]; then
+        echo "🚀 Caching Laravel config..."
+        php "$APP_BASE_DIR/artisan" config:cache
+    fi
+
+    ############################################################################
+    # artisan route:cache
+    ############################################################################
+    if [ "${AUTORUN_LARAVEL_ROUTE_CACHE:=true}" = "true" ]; then
+        echo "🚀 Caching Laravel routes..."
+        php "$APP_BASE_DIR/artisan" route:cache
+    fi
+
+    ############################################################################
+    # artisan view:cache
+    ############################################################################
+    if [ "${AUTORUN_LARAVEL_VIEW_CACHE:=true}" = "true" ]; then
+        echo "🚀 Caching Laravel views..."
+        php "$APP_BASE_DIR/artisan" view:cache
+    fi
+
+    ############################################################################
+    # artisan filament:optimize
+    ############################################################################
+    if [ "${AUTORUN_LARAVEL_FILAMENT_OPTIMIZE:=true}" = "true" ]; then
+        echo "🚀 Optimizing filamentPHP..."
+        php "$APP_BASE_DIR/artisan" filament:optimize
+    fi
+  ############################################################################
         # artisan route:cache
         ############################################################################
         if [ "${AUTORUN_LARAVEL_ROUTE_CACHE:=true}" = "true" ]; then
@@ -77,20 +122,19 @@ APP_BASE_DIR=/var/www/html
             echo "🚀 Caching Laravel views..."
             php "$APP_BASE_DIR/artisan" view:cache
         fi
-        ############################################################################
-        # artisan filament:optimize
-        ############################################################################
-        if [ "${AUTORUN_LARAVEL_VIEW_CACHE:=true}" = "true" ]; then
-            echo "🚀 Optimizing filamentPHP..."
-            php "$APP_BASE_DIR/artisan"  filament:optimize
-        fi
 
 
-#        ############################################################################
-#        # artisan event:cache
-#        ############################################################################
-#        if [ "${AUTORUN_LARAVEL_EVENT_CACHE:=true}" = "true" ]; then
-#            echo "🚀 Caching Laravel events..."
-#            php "$APP_BASE_DIR/artisan" event:cache
-#        fi
-    fi
+
+
+
+#    ############################################################################
+#    # artisan event:cache
+#    ############################################################################
+#    if [ "${AUTORUN_LARAVEL_EVENT_CACHE:=true}" = "true" ]; then
+#        echo "🚀 Caching Laravel events..."
+#        php "$APP_BASE_DIR/artisan" event:cache
+#    fi
+
+
+
+fi

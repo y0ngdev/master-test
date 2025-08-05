@@ -17,7 +17,7 @@ elif [ "$role" = "queue" ]; then
     /usr/local/bin/test-db.sh
 
     echo "Running the queue worker..."
-    exec php /var/www/html/artisan queue:work --verbose --tries=3 --timeout=120
+    exec php /var/www/html/artisan queue:work --verbose --tries=3 --timeout=3600
 
 #elif [ "$role" = "scheduler" ]; then
 #    echo "Running Laravel scheduler..."

@@ -65,7 +65,7 @@ class PlanResource extends Resource
                             ->name('Price id')
                             ->required()
                             ->keyLabel('Payment Provider')
-                            ->valueLabel('Price/Product ID')
+                            ->valueLabel('Price ID')
                             ->addActionLabel('Add Price ID')
                             ->addable(false)
                             ->deletable(false)

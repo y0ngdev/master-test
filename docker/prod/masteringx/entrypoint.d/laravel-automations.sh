@@ -81,7 +81,7 @@ APP_BASE_DIR=/var/www/html
         # artisan filament:optimize
         ############################################################################
         if [ "${AUTORUN_LARAVEL_VIEW_CACHE:=true}" = "true" ]; then
-            echo "🚀 Optimizing fiamentphp..."
+            echo "🚀 Optimizing filamentPHP..."
             php "$APP_BASE_DIR/artisan"  filament:optimize
         fi
 

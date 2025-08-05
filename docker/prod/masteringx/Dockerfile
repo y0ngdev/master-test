@@ -108,9 +108,14 @@ RUN chmod +x /usr/local/bin/test-db.sh
 # Copy the application code and dependencies from the build stage
 COPY --chown=www-data:www-data --from=builder /var/www/html /var/www/html
 
-RUN mkdir -p /var/www/html/storage/{app/public,framework/{cache,sessions,views},logs} \
+RUN mkdir -p /var/www/html/storage/app/public \
+    && mkdir -p /var/www/html/storage/framework/cache \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views \
+    && mkdir -p /var/www/html/storage/logs \
     && chown -R www-data:www-data /var/www/html/storage \
     && chmod -R 775 /var/www/html/storage
+
 
 # Set working directory
 WORKDIR /var/www/html

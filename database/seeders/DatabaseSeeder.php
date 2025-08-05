@@ -16,7 +16,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->seedIfEmpty(User::class, UserSeeder::class);
+//        Only in development environment
+//        $this->seedIfEmpty(User::class, UserSeeder::class);
+
         $this->seedIfEmpty(Plan::class, PlanSeeder::class);
         $this->seedIfEmpty(Article::class, ArticleSeeder::class);
         $this->seedIfEmpty(Testimonial::class, TestimonialSeeder::class);

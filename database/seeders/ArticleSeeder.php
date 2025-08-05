@@ -13,68 +13,7 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        //        ToDO
-        DB::table('modules')->insert([
-            [
-                'id' => 1,
-                'title' => 'Getting Started',
-                'order' => 1,
-                'status' => 'PUBLISHED',
-                'created_at' => '2025-06-30 10:27:11',
-                'updated_at' => '2025-06-30 10:27:11',
-            ],
-            [
-                'id' => 2,
-                'title' => 'Wrapping Up',
-                'order' => 2,
-                'status' => 'PUBLISHED',
-                'created_at' => '2025-06-30 10:28:25',
-                'updated_at' => '2025-06-30 10:28:25',
-            ],
-        ]);
-        DB::table('lessons')->insert([
-            [
-                'id' => '0197bdbd-da23-71ee-b462-2fc3a56f36cb',
-                'title' => 'Make an Alias',
-                'slug' => 'make-an-alias',
-                'description' => <<<'MARKDOWN'
-# Summary
-Learn how to interpret query plan costs, including startup and total costs, to optimize database performance. Discover how rows and width metrics reduce unnecessary data handling for faster queries.
 
-# Video Transcript
-For each node on the query plan, there is a set of parentheses and then a bunch of information that’s really hard to decipher...
-[Truncated for brevity — full content goes here]
-MARKDOWN,
-                'duration' => 282,
-                'can_preview' => true,
-                'position' => 1,
-                'status' => 'READY',
-                'video_driver' => 'FILE',
-                'disk' => null,
-                'video_source' => 'lessons/Getting Started/Make an Alias/0197bdbd-da23-71ee-b462-2fc3a56f36cb.m3u8',
-                'is_published' => true,
-                'module_id' => 1,
-                'created_at' => '2025-06-29 22:10:25',
-                'updated_at' => '2025-06-30 10:42:22',
-            ],
-            [
-                'id' => '0197be1c-e35e-7310-9789-04da722133c7',
-                'title' => 'Options for Reducing Inertia Payloads',
-                'slug' => 'options-for-reducing-inertia-payloads',
-                'description' => 'aaaaaaaaaaaaaaaaaaaaaaa',
-                'duration' => 882,
-                'can_preview' => false,
-                'position' => 3,
-                'status' => 'READY',
-                'video_driver' => 'FILE',
-                'disk' => null,
-                'video_source' => 'lessons/Wrapping/Options for Reducing Inertia Payloads/0197be1c-e35e-7310-9789-04da722133c7.m3u8',
-                'is_published' => true,
-                'module_id' => 2,
-                'created_at' => '2025-06-29 23:54:13',
-                'updated_at' => '2025-06-30 00:09:57',
-            ],
-        ]);
 
         Article::query()->insert([
             [

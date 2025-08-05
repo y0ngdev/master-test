@@ -77,8 +77,8 @@ services:
       - app-production
     environment:
       CONTAINER_ROLE: queue
-    command: php artisan queue:work --verbose --tries=3 --timeout=120
-   
+
+
 volumes:
   app-public-assets:
   app-storage:

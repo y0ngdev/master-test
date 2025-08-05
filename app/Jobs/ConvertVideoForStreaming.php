@@ -27,6 +27,7 @@ class ConvertVideoForStreaming implements ShouldQueue
      * The number of times the job may be attempted.
      */
     public int $tries = 5;
+    public int $timeout = 3600;
 
     public function __construct(public Lesson $lesson)
     {

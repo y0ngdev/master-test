@@ -16,7 +16,7 @@ if [ -f "$APP_BASE_DIR/artisan" ]; then
         echo "❌ APP_KEY is not set in the environment."
         echo "🛑 Aborting Laravel automations for security reasons."
         echo "💡 Tip: You can generate a key manually using: php artisan key:generate --show"
-        
+
        return 0 2>/dev/null || exit 0
     fi
 

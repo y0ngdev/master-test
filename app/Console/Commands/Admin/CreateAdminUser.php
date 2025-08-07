@@ -34,10 +34,10 @@ class CreateAdminUser extends Command
      */
     public function handle(): int
     {
-        if (User::where('role', 'admin')->exists()) {
-            $this->error('An admin already exists. Aborting.');
-            return Command::FAILURE;
-        }
+//        if (User::where('role', 'admin')->exists()) {
+//            $this->error('An admin already exists. Aborting.');
+//            return Command::FAILURE;
+//        }
 
         $email = $this->argument('email') ?? text(
             label: 'Enter admin email',
@@ -56,7 +56,8 @@ class CreateAdminUser extends Command
         if (!$password) {
             $password = password(
                 label: 'Enter password',
-                required: true
+                required: true,
+                validate: ['password' => 'required|string|min:8']
             );
 
             $confirmPassword = password(

@@ -5,6 +5,7 @@ namespace App\Console\Commands\Admin;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use function Laravel\Prompts\password;
 use function Laravel\Prompts\text;
@@ -33,7 +34,7 @@ class CreateAdminUser extends Command
      */
     public function handle(): int
     {
-        if (User::where('role','admin')->exists()) {
+        if (User::where('role', 'admin')->exists()) {
             $this->error('An admin already exists. Aborting.');
             return Command::FAILURE;
         }
@@ -49,12 +50,34 @@ class CreateAdminUser extends Command
         );
 
 
-        $password = $this->argument('password') ?? password(
-            label: 'Enter password',
-            required: true,
-            validate: fn($value) => strlen($value) >= 8 ? null : 'Password must be at least 8 characters'
-        );
 
+        $password = $this->argument('password');
+
+        if (!$password) {
+            $password = password(
+                label: 'Enter password',
+                required: true
+            );
+
+            $confirmPassword = password(
+                label: 'Confirm password',
+                required: true
+            );
+
+            $validator = Validator::make([
+                'password' => $password,
+                'password_confirmation' => $confirmPassword,
+            ], [
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+            ]);
+
+            if ($validator->fails()) {
+                foreach ($validator->errors()->all() as $error) {
+                    $this->error($error);
+                }
+                return Command::FAILURE;
+            }
+        }
 
         $user = User::create([
             'name' => $name,

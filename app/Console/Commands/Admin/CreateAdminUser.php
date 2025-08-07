@@ -31,9 +31,9 @@ class CreateAdminUser extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
-        if (User::exists()) {
+        if (User::where('role','admin')->exists()) {
             $this->error('An admin already exists. Aborting.');
             return Command::FAILURE;
         }
